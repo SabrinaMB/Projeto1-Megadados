@@ -47,10 +47,28 @@
             | ID_PASSARO  | id do pássaro  | não | não | sim | ID_PASSARO da tabela pássaro | - |
             | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
             
-        - Tabela mark_user_post: Representa quais pássaros cada usuário prefere
+        - Tabela mark_user_post: Representa quais usuários foram marcados em cada post
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
             | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
             | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
+            
+        - Tabela post_passaro: Representa quais pássaros foram marcados em cada post
+        
+            | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
+            | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+            | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
+            | ID_PASSARO  | id do pássaro  | não | não | sim | ID_PASSARO da tabela pássaro | - |
+            
+        - Tabela view_user_post: Representa quais pássaros cada usuário prefere
+        
+            | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
+            | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+            | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
+            | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
+            | BROWSER  | em qual navegador o usuário visualizou o post  | não | não | não | - | - |
+            | APARELHO  | em qual aparelho o usuário visualizou o post  | não | não | não | - | - |
+            | IP  | ip do aparelho no qual o usuário visualizou o post  | não | não | não | - | - |
+            | INSTANTE_VISUALIZACAO  | momento em que o usuário visualizou o post | sim, timestamp | não | não | - | - |
 
