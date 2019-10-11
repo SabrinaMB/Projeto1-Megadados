@@ -10,22 +10,6 @@
     - Schema:
 ![tabelas](tabelas.PNG)
     - Dicionário de dados:
-    
-
-
-
-=======
-# Projeto1-Megadados
-
-- Modelo Entidade-Relacionamento:
-
-![MER](image%20(2).png)
-
-- Modelo Relacional:
-
-    - Schema:
-![tabelas](tabelas.PNG)
-    - Dicionário de dados:
         - Tabela usuário: Representa os atributos de cada um dos usuários
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
@@ -89,4 +73,3 @@
             | IP  | ip do aparelho no qual o usuário visualizou o post  | não | não | não | - | - |
             | INSTANTE_VISUALIZACAO  | momento em que o usuário visualizou o post | sim, timestamp | não | não | - | - |
 
->>>>>>> 28b559cf5d6ae9809156f9ad11cc10985495507e
