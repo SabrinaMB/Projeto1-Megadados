@@ -2,4 +2,4 @@
 
 Modelo Entidade-Relacionamento:
 
-!(image (1).png)
+![MER](image(1).png)
