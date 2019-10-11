@@ -6,4 +6,4 @@
 
 - Modelo Relacional:
 
-![tabelas](tabelas.png)
+![tabelas](tabelas.PNG)
