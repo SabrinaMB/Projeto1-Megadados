@@ -19,7 +19,7 @@
             | CIDADE  | cidade onde mora o usuário  | não | não | não | - | - |
 
             
-        - Tabela pássaros: Representa os atributos de cada um dos pássaros
+        - Tabela pássaro: Representa os atributos de cada um dos pássaros
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -40,4 +40,17 @@
             | DATA_CRIACAO  | quando foi criado o post  | sim, timestamp | não | não | - | - |
 
 
+        - Tabela preferências: Representa quais pássaros cada usuário prefere
+        
+            | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
+            | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+            | ID_PASSARO  | id do pássaro  | não | não | sim | ID_PASSARO da tabela pássaro | - |
+            | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
+            
+        - Tabela mark_user_post: Representa quais pássaros cada usuário prefere
+        
+            | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
+            | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+            | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
+            | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
 
