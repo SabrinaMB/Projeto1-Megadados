@@ -6,3 +6,4 @@
 
 - Modelo Relacional:
 
+![tabelas](tabelas.PNG)
