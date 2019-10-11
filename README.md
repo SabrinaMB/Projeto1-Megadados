@@ -6,4 +6,10 @@
 
 - Modelo Relacional:
 
+    - Schema:
 ![tabelas](tabelas.PNG)
+    - Dicionário de dados:
+    
+
+
+
