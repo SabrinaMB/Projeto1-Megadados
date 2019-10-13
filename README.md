@@ -3,7 +3,7 @@
 
 - Modelo Entidade-Relacionamento:
 
-![MER](image%20(4).png)
+![MER](image%20(5).png)
 
 - Modelo Relacional:
 
