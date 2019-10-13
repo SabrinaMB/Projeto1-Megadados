@@ -7,7 +7,7 @@
 
 - Modelo Relacional:
 
-    - Schema:
+    - Schema/Diagrama do modelo relacional:
 ![tabelas](tabelas.PNG)
     - Dicionário de dados:
         - Tabela usuário: Representa os atributos de cada um dos usuários
