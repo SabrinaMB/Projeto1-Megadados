@@ -10,7 +10,7 @@
     - Schema/Diagrama do modelo relacional:
 ![tabelas](tabelas.PNG)
     - Dicionário de dados:
-        - Tabela usuário: Representa os atributos de cada um dos usuários
+        - Tabela usuarios: Representa os atributos de cada um dos usuários
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -20,7 +20,7 @@
             | CIDADE  | cidade onde mora o usuário  | não | não | não | - | - |
 
             
-        - Tabela pássaro: Representa os atributos de cada um dos pássaros
+        - Tabela passaros: Representa os atributos de cada um dos pássaros
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -41,7 +41,7 @@
             | DATA_CRIACAO  | quando foi criado o post  | sim, timestamp | não | não | - | - |
 
 
-        - Tabela preferências: Representa quais pássaros cada usuário prefere
+        - Tabela preferencias: Representa quais pássaros cada usuário prefere
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
