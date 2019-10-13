@@ -10,7 +10,7 @@
     - Schema/Diagrama do modelo relacional:
 ![tabelas](tabelas.PNG)
     - Dicionário de dados:
-        - Tabela usuarios: Representa os atributos de cada um dos usuários
+        - Tabela **usuarios**: Representa os atributos de cada um dos usuários
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -20,7 +20,7 @@
             | CIDADE  | cidade onde mora o usuário  | não | não | não | - | - |
 
             
-        - Tabela passaros: Representa os atributos de cada um dos pássaros
+        - Tabela **passaros**: Representa os atributos de cada um dos pássaros
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -28,7 +28,7 @@
             | PASSARO  | nome do pássaro  | não | não | não | - | - |
             
             
-        - Tabela post: Representa os atributos de cada um dos posts
+        - Tabela **post**: Representa os atributos de cada um dos posts
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -41,28 +41,28 @@
             | DATA_CRIACAO  | quando foi criado o post  | sim, timestamp | não | não | - | - |
 
 
-        - Tabela preferencias: Representa quais pássaros cada usuário prefere
+        - Tabela **preferencias**: Representa quais pássaros cada usuário prefere
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
             | ID_PASSARO  | id do pássaro  | não | não | sim | ID_PASSARO da tabela pássaro | - |
             | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
             
-        - Tabela mark_user_post: Representa quais usuários foram marcados em cada post
+        - Tabela **mark_user_post**: Representa quais usuários foram marcados em cada post
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
             | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
             | ID_USUARIO  | id do usuário  | não | não | sim | ID_USUARIO da tabela usuário | - |
             
-        - Tabela post_passaro: Representa quais pássaros foram marcados em cada post
+        - Tabela **post_passaro**: Representa quais pássaros foram marcados em cada post
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
             | ID_POST  | id do post  | não | não | sim | ID_POST da tabela post | - |
             | ID_PASSARO  | id do pássaro  | não | não | sim | ID_PASSARO da tabela pássaro | - |
             
-        - Tabela view_user_post: Representa quais pássaros cada usuário prefere
+        - Tabela **view_user_post**: Representa quais pássaros cada usuário prefere
         
             | Nome do campo  | Descrição | Auto-gerada | Chave primária | Chave estrangeira | Referencia | Restrições |
             | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
