@@ -18,7 +18,7 @@ class TestProjeto(unittest.TestCase):
             host=config['HOST'],
             user=config['USER'],
             password=config['PASS'],
-            database='tranqueira'
+            database='rede_passaros'
         )
 
     @classmethod
