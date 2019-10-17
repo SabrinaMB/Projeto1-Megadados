@@ -61,6 +61,13 @@ def lista_post(conn):
         posts = tuple(x[0] for x in res)
         return posts
 
+def lista_post_ativo(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * from post where ativo=1')
+        res = cursor.fetchall()
+        posts = tuple(x[0] for x in res)
+        return posts
+
 def adiciona_passaros(conn, passaro):
     with conn.cursor() as cursor:
         try:
@@ -244,3 +251,52 @@ def lista_view_user_post_id_usuario(conn, id_post):
         res = cursor.fetchall()
         id_usuario = tuple(x[0] for x in res)
         return id_usuario
+
+#### queries
+def ve_posts_usuario_cronologica(conn, id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute('''  SELECT titulo, URL, texto  FROM post
+                            INNER JOIN (usuarios) USING (id_criador)
+                            WHERE id_usuario=%s
+                            ORDER BY data_criacao''', (id_usuario))
+        res = cursor.fetchall()
+        id_usuario = tuple(x[0] for x in res)
+        return id_usuario
+
+####################################
+def usuarios_mais_populares_cidade(conn, cidade):
+    with conn.cursor() as cursor:
+        cursor.execute('''  SELECT nome FROM usuario
+                            INNER JOIN (view_user_post) USING id_criador
+                            INNER JOIN (post) USING (id_post)
+                            WHERE cidade=%s
+                            GROUP BY id_criador
+                            ORDER BY count(id_criador)
+                            LIMIT 1
+                            ''',)
+        res = cursor.fetchall()
+        nome = tuple(x[0] for x in res)
+        return nome
+
+
+def usuarios_referenciados_por_usuario(conn, id_criador):
+    with conn.cursor() as cursor:
+        cursor.execute('''  SELECT nome FROM usuario
+                            INNER JOIN (mark_user_post) USING id_usuario
+                            INNER JOIN (post) USING (id_post)
+                            WHERE id_criador=%s
+                            ''',)
+        res = cursor.fetchall()
+        nome = tuple(x[0] for x in res)
+        return nome
+
+
+
+def lista_URL_e_tag(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('''  SELECT URL, passaro FROM passaros
+                            INNER JOIN post_passaro USING (id_passaro)
+                            INNER JOIN (post) USING (id_post)''')
+        res = cursor.fetchall()
+        URL, passaro = tuple(x[0] for x in res)
+        return URL, passaro

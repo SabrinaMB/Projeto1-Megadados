@@ -75,7 +75,6 @@ class TestProjeto(unittest.TestCase):
             texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
             id_criador = acha_nome_usuario(conn, email)
 
-            # Adiciona um perigo não existente.
             adiciona_post(conn, id_criador, titulo, texto=texto)
 
             id_post = acha_post(conn, id_criador, titulo)
@@ -137,36 +136,41 @@ class TestProjeto(unittest.TestCase):
 #         res = lista_passaro(conn)
 #         self.assertFalse(res)
 # #
-#     def test_remove_post(self):
-#         conn = self.__class__.connection
+    @unittest.skip('Em desenvolvimento.')
 
-#         nome = 'paulost'
-#         email = 'paulost@mememail.com'
-#         cidade = 'sao paulo'
+    def test_remove_post(self):
+        conn = self.__class__.connection
 
-#         # Adiciona um perigo não existente.
-#         adiciona_usuario(conn, nome, email, cidade)
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
 
-#         passaro = 'beija-flor'
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
 
-#         # Adiciona um perigo não existente.
-#         adiciona_passaros(conn, passaro)
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
     
-#         titulo = 'meu primeirp post'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '1'
+        titulo = 'meu primeirp post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
+        id_criador = acha_nome_usuario(conn, email)
 
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, titulo, id_criador, texto=texto)
-#         id = acha_post(conn, titulo, id_criador)
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-#         res = lista_post_ativo(conn)
-#         self.assertCountEqual(res, (id,))
+        id_post = acha_post(conn, id_criador, titulo)
+        id_passaro = acha_passaros(conn, passaro)
 
-#         muda_ativo_post(conn, id)
+        adiciona_post_passaro(conn, id_post, id_passaro)
 
-#         res = lista_post_ativo(conn)
-#         self.assertFalse(res)
+        res = lista_post_ativo(conn)
+        self.assertCountEqual(res, (id_post, id_passaro))
+
+        muda_ativo_post(conn, id_post, id_passaro)
+
+        res = lista_post_ativo(conn)
+        self.assertFalse(res)
 
 # # MUDA
 
