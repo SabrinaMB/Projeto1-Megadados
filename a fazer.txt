@@ -1,2 +1,2 @@
-todos os testes
-servidor pra interagir com banco de dados
+- todos os testes
+- servidor pra interagir com banco de dados

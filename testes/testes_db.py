@@ -57,50 +57,50 @@ class TestProjeto(unittest.TestCase):
         self.assertIsNone(id)
 #
     def test_adiciona_post(self):
-            conn = self.__class__.connection
+        conn = self.__class__.connection
 
-            nome = 'paulost'
-            email = 'paulost@mememail.com'
-            cidade = 'sao paulo'
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
 
-            # Adiciona um perigo não existente.
-            adiciona_usuario(conn, nome, email, cidade)
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
 
-            passaro = 'beija-flor'
+        passaro = 'beija-flor'
 
-            # Adiciona um perigo não existente.
-            adiciona_passaros(conn, passaro)
-        
-            titulo = 'meu primeiro post'
-            texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-            id_criador = acha_nome_usuario(conn, email)
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
+    
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
+        id_criador = acha_nome_usuario(conn, email)
 
-            adiciona_post(conn, id_criador, titulo, texto=texto)
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-            id_post = acha_post(conn, id_criador, titulo)
-            id_passaro = acha_passaros(conn, passaro)
+        id_post = acha_post(conn, id_criador, titulo)
+        id_passaro = acha_passaros(conn, passaro)
 
-            adiciona_post_passaro(conn, id_post, id_passaro)
+        adiciona_post_passaro(conn, id_post, id_passaro)
 
-            id = acha_post(conn, id_criador, titulo)
-            self.assertIsNotNone(id)
+        id = acha_post(conn, id_criador, titulo)
+        self.assertIsNotNone(id)
 
-            id = acha_post(conn, id, titulo)
-            self.assertIsNone(id)
+        id = acha_post(conn, id, titulo)
+        self.assertIsNone(id)
 
 #
     def test_adiciona_passaro(self):
-            conn = self.__class__.connection
-        
-            passaro = 'bem-te-vi'
+        conn = self.__class__.connection
+    
+        passaro = 'bem-te-vi'
 
-            adiciona_passaros(conn, passaro)
+        adiciona_passaros(conn, passaro)
 
-            id = acha_passaros(conn, passaro)
-            self.assertIsNotNone(id)
+        id = acha_passaros(conn, passaro)
+        self.assertIsNotNone(id)
 
-            id = acha_passaros(conn, "mal-te-vi")
-            self.assertIsNone(id)
+        id = acha_passaros(conn, "mal-te-vi")
+        self.assertIsNone(id)
 
 # # REMOVE
 
@@ -136,7 +136,7 @@ class TestProjeto(unittest.TestCase):
 #         res = lista_passaro(conn)
 #         self.assertFalse(res)
 # #
-    @unittest.skip('Em desenvolvimento.')
+    #@unittest.skip('Em desenvolvimento.')
 
     def test_remove_post(self):
         conn = self.__class__.connection
@@ -174,40 +174,73 @@ class TestProjeto(unittest.TestCase):
 
 # # MUDA
 
-#     def test_muda_titulo_post(self):
-#         conn = self.__class__.connection
+    def test_muda_titulo_post(self):
+        conn = self.__class__.connection
 
-#         titulo = 'meu primeirp post'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
 
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
 
-#         titulo = 'meu primeirp posti'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
+        id_criador = '0'
 
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-#         id = acha_post(conn, id_criador, titulo)
+        # Adiciona um perigo não existente.
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             novo_titulo = 'meu primeirp post'
-#             muda_titulo_post(conn, id, novo_titulo)
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
+        titulo = 'meu primeirp posto'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
+        id_criador = '0'
 
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
+        # Adiciona um perigo não existente.
+        adiciona_post(conn, id_criador, titulo, texto=texto)
+        id = acha_post(conn, id_criador, titulo)
 
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
+        # Tenta mudar nome para algum nome já existente.
+        try:
+            novo_titulo = 'meu primeiro post'
+            muda_titulo_post(conn, id, novo_titulo)
+            self.fail('Não deveria ter mudado o nome.')
+        except ValueError as e:
+            pass
 
-#     def test_muda_nome_perigo(self):
+        # Tenta mudar nome para nome inexistente.
+        muda_titulo_post(conn, id, 'postcaliptico')
+
+        # Verifica se mudou.
+        id_novo = acha_post(conn, id, 'postcaliptico')
+        self.assertEqual(id, id_novo)
+
+    def test_muda_URL_post(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
+        url = 'url.exemplo.com'
+        id_criador = '0'
+
+        # Adiciona um perigo não existente.
+        adiciona_post(conn, id_criador, titulo, texto=texto, url=url)
+
+        id = acha_post(conn, id_criador, titulo)
+
+        # Tenta mudar nome para algum nome já existente.
+        novo_url = 'url.exemplo2.com'
+        muda_URL_post(conn, id, novo_url) = 'url.exemplo2.com'
+
+        id = acha_post(conn, id_criador, titulo)
+
+    def test_muda_texto_post(self):
 #         conn = self.__class__.connection
 
 #         adiciona_perigo(conn, 'ecológico')
@@ -229,7 +262,66 @@ class TestProjeto(unittest.TestCase):
 #         id_novo = acha_perigo(conn, 'apocalíptico')
 #         self.assertEqual(id, id_novo)
 
-#     def test_muda_nome_perigo(self):
+    def test_muda_nome_passaros(self):
+        conn = self.__class__.connection
+
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
+
+
+
+    def test_muda_nome_usuario(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+    def test_muda_email_usuario(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+    def test_muda_cidade_usuario(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+#         adiciona_perigo(conn, 'ecológico')
+
+#         adiciona_perigo(conn, 'climático')
+#         id = acha_perigo(conn, 'climático')
+
+#         # Tenta mudar nome para algum nome já existente.
+#         try:
+#             muda_nome_perigo(conn, id, 'ecológico')
+#             self.fail('Não deveria ter mudado o nome.')
+#         except ValueError as e:
+#             pass
+
+#         # Tenta mudar nome para nome inexistente.
+#         muda_nome_perigo(conn, id, 'apocalíptico')
+
+#         # Verifica se mudou.
+#         id_novo = acha_perigo(conn, 'apocalíptico')
+#         self.assertEqual(id, id_novo)
+
+    # def test_muda_texto_post(self):
 #         conn = self.__class__.connection
 
 #         adiciona_perigo(conn, 'ecológico')
