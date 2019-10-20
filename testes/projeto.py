@@ -53,7 +53,6 @@ def muda_ativo_post(conn, id_post, ativo=0):
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso alterar ativo do id {id_post} para {ativo} na tabela post')
 
-
 def lista_post(conn):
     with conn.cursor() as cursor:
         cursor.execute('SELECT * from post')
@@ -84,9 +83,9 @@ def acha_passaros(conn, passaro):
         else:
             return None
 
-def remove_passaros(conn, id_passaro):
+def muda_ativo_passaros(conn, id_passaro, ativo=0):
     with conn.cursor() as cursor:
-        cursor.execute('DELETE FROM passaros WHERE id_passaro=%s', (id_passaro))
+        cursor.execute('UPDATE passaros SET ativo=%s WHERE id_passaro=%s', (ativo, id_passaro))
 
 def muda_nome_passaros(conn, id_passaro, novo_passaro):
     with conn.cursor() as cursor:
@@ -102,6 +101,13 @@ def lista_passaros(conn):
         passaros = tuple(x[0] for x in res)
         return passaros
 
+def lista_passaros_ativos(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * from passaros WHERE ativo=1')
+        res = cursor.fetchall()
+        passaros = tuple(x[0] for x in res)
+        return passaros
+
 def adiciona_usuario(conn, nome, email, cidade):
     with conn.cursor() as cursor:
         try:
@@ -109,7 +115,15 @@ def adiciona_usuario(conn, nome, email, cidade):
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir nome {nome}, email {email} e cidade {cidade} na tabela usuario')
 
-def acha_nome_usuario(conn, email):
+def muda_ativo_usuario(conn, id_usuario, ativo=0):
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute('UPDATE usuario SET ativo=%s where id_usuario=%s', (ativo, id_usuario))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Não posso alterar ativo para {ativo} na tabela usuario')
+
+
+def acha_id_usuario(conn, email):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_usuario FROM usuario WHERE email = %s', (email))
         res = cursor.fetchone()
@@ -152,16 +166,23 @@ def lista_usuario(conn):
     with conn.cursor() as cursor:
         cursor.execute('SELECT * from usuario')
         res = cursor.fetchall()
-        passaros = tuple(x[0] for x in res)
-        return passaros
+        usuario = tuple(x[0] for x in res)
+        return usuario
+
+def lista_usuarios_ativos(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * from usuario WHERE ativo=1')
+        res = cursor.fetchall()
+        usuario = tuple(x[0] for x in res)
+        return usuario
 
 def adiciona_preferencia(conn, id_usuario, id_passaro):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO preferencias (id_usuario, id_passaro) VALUES (%s, %s)', (id_usuario, id_passaro))
 
-def remove_preferencia(conn, id_usuario, id_passaro):
-    with conn.cursor() as cursor:
-        cursor.execute('DELETE FROM preferencias WHERE id_usuario=%s and id_passaro=%s', (id_usuario, id_passaro))
+# def remove_preferencia(conn, id_usuario, id_passaro):
+#     with conn.cursor() as cursor:
+#         cursor.execute('DELETE FROM preferencias WHERE id_usuario=%s and id_passaro=%s', (id_usuario, id_passaro))
 
 def lista_preferencias_id_usuario(conn, id_passaro):
     with conn.cursor() as cursor:
@@ -181,12 +202,12 @@ def adiciona_post_passaro(conn, id_post, id_passaro):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO post_passaro (id_post, id_passaro) VALUES (%s, %s)', (id_post, id_passaro))
 
-def muda_ativo_post_passaro(conn, id_post, id_passaro, ativo=0):
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute('UPDATE post_passaro SET ativo=%s where id_post=%s and id_passaro=%s', (ativo, id_post, id_passaro))
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_passaro {id_passaro} para {ativo} na tabela post_passaro')
+# def muda_ativo_post_passaro(conn, id_post, id_passaro, ativo=0):
+#     with conn.cursor() as cursor:
+#         try:
+#             cursor.execute('UPDATE post_passaro SET ativo=%s where id_post=%s and id_passaro=%s', (ativo, id_post, id_passaro))
+#         except pymysql.err.IntegrityError as e:
+#             raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_passaro {id_passaro} para {ativo} na tabela post_passaro')
 
 def lista_post_passaro_id_post(conn, id_passaro):
     with conn.cursor() as cursor:
@@ -206,12 +227,12 @@ def adiciona_mark_user_post(conn, id_post, id_usuario):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO mark_user_post (id_post, id_usuario) VALUES (%s, %s)', (id_post, id_usuario))
 
-def muda_ativo_mark_user_post(conn, id_post, id_usuario, ativo=0):
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute('UPDATE mark_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso alterar nome do id {id} para {ativo, id_usuario, id_usuario} na tabela mark_user_post')
+# def muda_ativo_mark_user_post(conn, id_post, id_usuario, ativo=0):
+#     with conn.cursor() as cursor:
+#         try:
+#             cursor.execute('UPDATE mark_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
+#         except pymysql.err.IntegrityError as e:
+#             raise ValueError(f'Não posso alterar nome do id {id} para {ativo, id_usuario, id_usuario} na tabela mark_user_post')
 
 def lista_mark_user_post_id_post(conn, id_usuario):
     with conn.cursor() as cursor:
@@ -231,12 +252,12 @@ def adiciona_view_user_post(conn, id_post, id_usuario, IP, browser, aparelho):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO view_user_post (id_post, id_usuario, IP, browser, aparelho) VALUES (%s, %s)', (id_post, id_usuario, IP, browser, aparelho))
 
-def muda_ativo_view_user_post(conn, id_post, id_usuario, ativo=0):
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute('UPDATE view_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_usuario {id_usuario} para {ativo, id_usuario, id_usuario} na tabela view_user_post')
+# def muda_ativo_view_user_post(conn, id_post, id_usuario, ativo=0):
+#     with conn.cursor() as cursor:
+#         try:
+#             cursor.execute('UPDATE view_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
+#         except pymysql.err.IntegrityError as e:
+#             raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_usuario {id_usuario} para {ativo, id_usuario, id_usuario} na tabela view_user_post')
 
 def lista_view_user_post_id_post(conn, id_usuario):
     with conn.cursor() as cursor:
@@ -285,10 +306,20 @@ def usuarios_referenciados_por_usuario(conn, id_criador):
                             INNER JOIN (mark_user_post) USING id_usuario
                             INNER JOIN (post) USING (id_post)
                             WHERE id_criador=%s
-                            ''',)
+                            GROUP BY id_criador
+                            ''')
         res = cursor.fetchall()
         nome = tuple(x[0] for x in res)
         return nome
+
+def quantidade_aparelhos(conn):
+    with conn.cursor() as cursor:
+        cursor.execute(''' SELECT aparelho, browser FROM view_user_post 
+                           GROUP BY aparelho, browser;
+                            ''')
+        res = cursor.fetchall()
+        aparelho, browser = tuple(x[0] for x in res)
+        return aparelho, browser
 
 
 
