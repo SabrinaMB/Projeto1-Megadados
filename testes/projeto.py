@@ -377,24 +377,23 @@ def adiciona_joinhas(conn, id_post, id_usuario, gosta='NULL'):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO joinhas (id_post, id_usuario, gosta) VALUES (%s, %s, %s)', (id_post, id_usuario, gosta))
 
-def lista_joinhas_id_post(conn, id_usuario):
+def lista_joinhas_id_post(conn, id_usuario, gosta=1):
     with conn.cursor() as cursor:
-        cursor.execute('SELECT id_post FROM joinhas WHERE id_usuario=%s', (id_usuario))
+        cursor.execute('SELECT id_post FROM joinhas WHERE id_usuario=%s AND gosta=%s', (id_usuario, gosta))
         res = cursor.fetchall()
         id_post = tuple(x[0] for x in res)
         return id_post
 
-
-def lista_joinhas_id_usuario(conn, id_post):
+def lista_joinhas_id_usuario(conn, id_post, gosta=1):
     with conn.cursor() as cursor:
-        cursor.execute('SELECT id_usuario FROM joinhas WHERE id_post=%s', (id_post))
+        cursor.execute('SELECT id_usuario FROM joinhas WHERE id_post=%s AND gosta=%s', (id_post, gosta))
         res = cursor.fetchall()
         id_usuario = tuple(x[0] for x in res)
         return id_usuario
 
-def muda_joinhas(conn, id_post, novo_joinha):
+def muda_joinhas(conn, id_post, id_usuario, novo_joinha):
     with conn.cursor() as cursor:
         try:
-            cursor.execute('UPDATE joinhas SET gosta=%s where id_post=%s', (novo_joinha, id_post))
+            cursor.execute('UPDATE joinhas SET gosta=%s where id_post=%s AND id_usuario=%s', (novo_joinha, id_post, id_usuario))
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso alterar joinha do id {id_post} para {novo_joinha} na tabela post')

@@ -79,7 +79,7 @@ class TestProjeto(unittest.TestCase):
         self.assertEqual((aparelho,), a)
         self.assertEqual((browser,), b)
 
-    def test_adiciona_joinha(self):
+    def test_adiciona_e_muda_joinha(self):
         conn = self.__class__.connection
 
         nome = 'paulost'
@@ -120,7 +120,10 @@ class TestProjeto(unittest.TestCase):
         lista_views = lista_joinhas_id_usuario(conn, id_post)
 
         self.assertEqual(lista_views[0], id_usuario)
-        self.assertEqual(lista_joinhas_id_post(conn, id_usuario), (id_post,))
+        self.assertEqual(lista_joinhas_id_post(conn, id_usuario, 1), (id_post,))
+        muda_joinhas(conn, id_post, id_usuario, 0)
+        self.assertEqual(lista_joinhas_id_post(conn, id_usuario, 0), (id_post,))
+
 
     def test_adiciona_preferencia(self):
         conn = self.__class__.connection
@@ -191,7 +194,6 @@ class TestProjeto(unittest.TestCase):
         id_post = acha_post(conn, id_criador, titulo)
         id_passaro = acha_passaros(conn, passaro)
 
-        adiciona_post_passaro(conn, id_post, id_passaro)
 
         id = acha_post(conn, id_criador, titulo)
         self.assertIsNotNone(id)
