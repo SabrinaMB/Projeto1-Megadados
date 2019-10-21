@@ -78,6 +78,12 @@ def acha_usuario_nome(conn, nome):
         else:
             return None
 
+def rendomuser(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM usuario ORDER BY RAND() LIMIT 1')
+        res = cursor.fetchone()
+        return res[0]
+        
 def acha_post(conn, id_criador, titulo):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_post FROM post WHERE id_criador = %s and titulo = %s', (id_criador, titulo))
