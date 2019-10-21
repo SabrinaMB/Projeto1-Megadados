@@ -87,6 +87,15 @@ def acha_post(conn, id_criador, titulo):
         else:
             return None
 
+def acha_post_por_ID(conn, id_post):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * FROM post WHERE id_post = %s', (id_post))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
 def acha_post_ativo(conn, id_criador, titulo):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_post FROM post WHERE id_criador = %s and titulo = %s and ativo = 1', (id_criador, titulo))
