@@ -1,11 +1,82 @@
 import pymysql
 
+
+def passaro_parser(texto):
+    lista = []
+    start = 0
+    end = 0
+
+    if texto != None:
+        while start < len(texto):
+
+            if texto[start] != "#":
+                start += 1
+            else:
+                end = start + 1
+
+                while ((texto[end].isalpha()) or (texto[end] == "-")):
+                    end += 1
+
+                lista.append(texto[start + 1:end])
+
+            end += 1
+            start = end
+
+    return lista
+
+def pessoa_parser(texto):
+    lista = []
+    start = 0
+    end = 0
+
+    if texto != None:
+        while start < len(texto):
+
+            if texto[start] != "@":
+                start += 1
+            else:
+                end = start + 1
+
+                while texto[end] != " ":
+                    end += 1
+
+                lista.append(texto[start + 1:end])
+
+            end += 1
+            start = end
+
+    return lista
+
 def adiciona_post(conn, id_criador, titulo, URL='NULL', texto='NULL'):
+
     with conn.cursor() as cursor:
         try:
             cursor.execute('INSERT INTO post (titulo, id_criador, URL, texto) VALUES (%s, %s, %s, %s)', (titulo, id_criador, URL, texto))
+            id_post = acha_post(conn, id_criador, titulo)
+
+            passaros = passaro_parser(texto)
+            if len(passaros) > 0:
+                for passaro in passaros:
+                    passarinho = acha_passaros(conn, passaro)
+                    adiciona_post_passaro(conn, id_post, passarinho)
+
+            pessoas = pessoa_parser(texto)
+            if len(pessoas) > 0:
+                for pessoa in pessoas:
+                    pessoinha = acha_usuario_nome(conn, pessoa)
+                    adiciona_mark_user_post(conn, id_post, pessoinha)
+
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir titulo {titulo}, URL {URL}, texto {texto}, id_criador {id_criador} na tabela post')
+
+def acha_usuario_nome(conn, nome):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM usuario WHERE nome = %s', (nome))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
 
 def acha_post(conn, id_criador, titulo):
     with conn.cursor() as cursor:
@@ -62,7 +133,7 @@ def lista_post(conn):
 
 def lista_post_ativo(conn):
     with conn.cursor() as cursor:
-        cursor.execute('SELECT * from post where ativo=1')
+        cursor.execute('SELECT * from post where ativo=1;')
         res = cursor.fetchall()
         posts = tuple(x[0] for x in res)
         return posts
@@ -180,10 +251,6 @@ def adiciona_preferencia(conn, id_usuario, id_passaro):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO preferencias (id_usuario, id_passaro) VALUES (%s, %s)', (id_usuario, id_passaro))
 
-# def remove_preferencia(conn, id_usuario, id_passaro):
-#     with conn.cursor() as cursor:
-#         cursor.execute('DELETE FROM preferencias WHERE id_usuario=%s and id_passaro=%s', (id_usuario, id_passaro))
-
 def lista_preferencias_id_usuario(conn, id_passaro):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_usuario FROM preferencias WHERE id_passaro=%s', (id_passaro))
@@ -201,13 +268,6 @@ def lista_preferencias_id_passaro(conn, id_usuario):
 def adiciona_post_passaro(conn, id_post, id_passaro):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO post_passaro (id_post, id_passaro) VALUES (%s, %s)', (id_post, id_passaro))
-
-# def muda_ativo_post_passaro(conn, id_post, id_passaro, ativo=0):
-#     with conn.cursor() as cursor:
-#         try:
-#             cursor.execute('UPDATE post_passaro SET ativo=%s where id_post=%s and id_passaro=%s', (ativo, id_post, id_passaro))
-#         except pymysql.err.IntegrityError as e:
-#             raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_passaro {id_passaro} para {ativo} na tabela post_passaro')
 
 def lista_post_passaro_id_post(conn, id_passaro):
     with conn.cursor() as cursor:
@@ -227,13 +287,6 @@ def adiciona_mark_user_post(conn, id_post, id_usuario):
     with conn.cursor() as cursor:
         cursor.execute('INSERT INTO mark_user_post (id_post, id_usuario) VALUES (%s, %s)', (id_post, id_usuario))
 
-# def muda_ativo_mark_user_post(conn, id_post, id_usuario, ativo=0):
-#     with conn.cursor() as cursor:
-#         try:
-#             cursor.execute('UPDATE mark_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
-#         except pymysql.err.IntegrityError as e:
-#             raise ValueError(f'Não posso alterar nome do id {id} para {ativo, id_usuario, id_usuario} na tabela mark_user_post')
-
 def lista_mark_user_post_id_post(conn, id_usuario):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_post FROM mark_user_post WHERE id_usuario=%s', (id_usuario))
@@ -250,14 +303,7 @@ def lista_mark_user_post_id_usuario(conn, id_post):
 
 def adiciona_view_user_post(conn, id_post, id_usuario, IP, browser, aparelho):
     with conn.cursor() as cursor:
-        cursor.execute('INSERT INTO view_user_post (id_post, id_usuario, IP, browser, aparelho) VALUES (%s, %s)', (id_post, id_usuario, IP, browser, aparelho))
-
-# def muda_ativo_view_user_post(conn, id_post, id_usuario, ativo=0):
-#     with conn.cursor() as cursor:
-#         try:
-#             cursor.execute('UPDATE view_user_post SET ativo=%s where id_post=%s and id_usuario=%s', (ativo, id_post, id_passaro))
-#         except pymysql.err.IntegrityError as e:
-#             raise ValueError(f'Não posso alterar ativo do id_post {id_post} e id_usuario {id_usuario} para {ativo, id_usuario, id_usuario} na tabela view_user_post')
+        cursor.execute('INSERT INTO view_user_post (id_post, id_usuario, IP, browser, aparelho) VALUES (%s, %s, %s, %s, %s)', (id_post, id_usuario, IP, browser, aparelho))
 
 def lista_view_user_post_id_post(conn, id_usuario):
     with conn.cursor() as cursor:
@@ -272,62 +318,75 @@ def lista_view_user_post_id_usuario(conn, id_post):
         res = cursor.fetchall()
         id_usuario = tuple(x[0] for x in res)
         return id_usuario
-
 #### queries
-def ve_posts_usuario_cronologica(conn, id_usuario):
+def ve_posts_usuario_nao_cronologica(conn, id_usuario):
     with conn.cursor() as cursor:
         cursor.execute('''  SELECT titulo, URL, texto  FROM post
-                            INNER JOIN (usuarios) USING (id_criador)
-                            WHERE id_usuario=%s
+                            INNER JOIN (usuario)
+                            WHERE id_criador=%s
                             ORDER BY data_criacao''', (id_usuario))
+        res = cursor.fetchall()
+        titulo, URL, texto = tuple(x[0] for x in res)
+        return titulo, URL, texto
+
+def usuario_mais_popular_cidade(conn, cidade):
+    with conn.cursor() as cursor:
+        cursor.execute('''  SELECT id_criador FROM usuario
+                            INNER JOIN (view_user_post)
+                            INNER JOIN (post)
+                            WHERE cidade=%s
+                            GROUP BY id_criador
+                            ORDER BY count(id_criador)
+                            LIMIT 1''', cidade)
         res = cursor.fetchall()
         id_usuario = tuple(x[0] for x in res)
         return id_usuario
 
-####################################
-def usuarios_mais_populares_cidade(conn, cidade):
-    with conn.cursor() as cursor:
-        cursor.execute('''  SELECT nome FROM usuario
-                            INNER JOIN (view_user_post) USING id_criador
-                            INNER JOIN (post) USING (id_post)
-                            WHERE cidade=%s
-                            GROUP BY id_criador
-                            ORDER BY count(id_criador)
-                            LIMIT 1
-                            ''',)
-        res = cursor.fetchall()
-        nome = tuple(x[0] for x in res)
-        return nome
-
-
 def usuarios_referenciados_por_usuario(conn, id_criador):
     with conn.cursor() as cursor:
         cursor.execute('''  SELECT nome FROM usuario
-                            INNER JOIN (mark_user_post) USING id_usuario
-                            INNER JOIN (post) USING (id_post)
+                            INNER JOIN (mark_user_post)
+                            INNER JOIN (post)
                             WHERE id_criador=%s
                             GROUP BY id_criador
-                            ''')
+                            ''', id_criador)
         res = cursor.fetchall()
         nome = tuple(x[0] for x in res)
         return nome
 
-def quantidade_aparelhos(conn):
+def aparelhos_por_browser(conn):
     with conn.cursor() as cursor:
         cursor.execute(''' SELECT aparelho, browser FROM view_user_post 
-                           GROUP BY aparelho, browser;
-                            ''')
+                           GROUP BY aparelho, browser; ''')
         res = cursor.fetchall()
-        aparelho, browser = tuple(x[0] for x in res)
+        aparelho = tuple(x[0] for x in res)
+        browser = tuple(x[1] for x in res)
         return aparelho, browser
-
-
 
 def lista_URL_e_tag(conn):
     with conn.cursor() as cursor:
         cursor.execute('''  SELECT URL, passaro FROM passaros
-                            INNER JOIN post_passaro USING (id_passaro)
-                            INNER JOIN (post) USING (id_post)''')
+                            INNER JOIN post_passaro
+                            INNER JOIN (post)''')
         res = cursor.fetchall()
-        URL, passaro = tuple(x[0] for x in res)
+        URL = tuple(x[0] for x in res)
+        passaro = tuple(x[1] for x in res)
         return URL, passaro
+
+def adiciona_joinhas(conn, id_post, id_usuario, gosta='NULL'):
+    with conn.cursor() as cursor:
+        cursor.execute('INSERT INTO joinhas (id_post, id_usuario, gosta) VALUES (%s, %s, %s)', (id_post, id_usuario, gosta))
+
+def lista_joinhas_id_post(conn, id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_post FROM joinhas WHERE id_usuario=%s', (id_usuario))
+        res = cursor.fetchall()
+        id_post = tuple(x[0] for x in res)
+        return id_post
+
+def lista_joinhas_id_usuario(conn, id_post):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM joinhas WHERE id_post=%s', (id_post))
+        res = cursor.fetchall()
+        id_usuario = tuple(x[0] for x in res)
+        return id_usuario

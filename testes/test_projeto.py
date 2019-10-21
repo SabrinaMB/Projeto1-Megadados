@@ -290,7 +290,7 @@ def setUpModule():
         run_sql_script(filename)
 
 def tearDownModule():
-    run_sql_script('tear_down.sql')
+    run_sql_script('../scripts_DB/tear_down.sql')
 
 if __name__ == '__main__':
     global config
