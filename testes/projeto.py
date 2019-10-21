@@ -384,9 +384,17 @@ def lista_joinhas_id_post(conn, id_usuario):
         id_post = tuple(x[0] for x in res)
         return id_post
 
+
 def lista_joinhas_id_usuario(conn, id_post):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_usuario FROM joinhas WHERE id_post=%s', (id_post))
         res = cursor.fetchall()
         id_usuario = tuple(x[0] for x in res)
         return id_usuario
+
+def muda_joinhas(conn, id_post, novo_joinha):
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute('UPDATE joinhas SET gosta=%s where id_post=%s', (novo_joinha, id_post))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Não posso alterar joinha do id {id_post} para {novo_joinha} na tabela post')
