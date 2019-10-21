@@ -7,6 +7,7 @@ import re
 import subprocess
 import unittest
 import pymysql
+from random import randint
 
 from projeto import *
 
@@ -35,9 +36,118 @@ class TestProjeto(unittest.TestCase):
         with conn.cursor() as cursor:
             cursor.execute('ROLLBACK')
 
-################################## TABELAS PRIMARIAS ##################################
-# ADICIONA
-#
+    def test_adiciona_view_user_post_e_aparelhos_browser(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
+    
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor oi'
+        id_criador = acha_id_usuario(conn, email)
+
+        adiciona_post(conn, id_criador, titulo, texto=texto)
+
+        nome = 'matteo'
+        email = 'matteo@mememail.com'
+        cidade = 'tokyo'
+
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        id_post = acha_post(conn, id_criador, titulo)
+        id_usuario = acha_id_usuario(conn, email)
+        IP = 10
+        browser = "banana"
+        aparelho = "iphone 6s"
+
+        adiciona_view_user_post(conn, id_post, id_usuario, IP, browser, aparelho)
+
+        lista_views = lista_view_user_post_id_usuario(conn, id_post)
+
+        self.assertEqual(lista_views, (id_usuario,))
+        a, b = aparelhos_por_browser(conn)
+        self.assertEqual((aparelho,), a)
+        self.assertEqual((browser,), b)
+
+    def test_adiciona_joinha(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
+    
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor oi'
+        id_criador = acha_id_usuario(conn, email)
+
+        adiciona_post(conn, id_criador, titulo, texto=texto)
+
+        nome = 'matteo'
+        email = 'matteo@mememail.com'
+        cidade = 'tokyo'
+
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+
+        id_post = acha_post(conn, id_criador, titulo)
+        id_usuario = acha_id_usuario(conn, email)
+        IP = 10
+        browser = "banana"
+        aparelho = "iphone 6s"
+
+        adiciona_joinhas(conn, id_post, id_usuario, gosta=1)
+        # adiciona_view_user_post(conn, id_post, id_usuario, IP, browser, aparelho)
+
+        lista_views = lista_joinhas_id_usuario(conn, id_post)
+
+        self.assertEqual(lista_views[0], id_usuario)
+        self.assertEqual(lista_joinhas_id_post(conn, id_usuario), (id_post,))
+
+    def test_adiciona_preferencia(self):
+        conn = self.__class__.connection
+    
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um usuario não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
+
+        id_usuario = acha_id_usuario(conn, email)
+        id_passaro = acha_passaros(conn, passaro)
+
+        adiciona_preferencia(conn, id_usuario, id_passaro)
+
+        # Checa se o usuario existe.
+        
+        lista = lista_preferencias_id_passaro(conn, id_usuario)
+
+        self.assertEqual(lista[0], id_passaro)
+
     def test_adiciona_usuario(self):
         conn = self.__class__.connection
     
@@ -56,7 +166,7 @@ class TestProjeto(unittest.TestCase):
         id = acha_id_usuario(conn, 'mailzinho@pompom.com')
         self.assertIsNone(id)
 #
-    def test_adiciona_post(self):
+    def test_adiciona_post_e_lista_URL_tag(self):
         conn = self.__class__.connection
 
         nome = 'paulost'
@@ -72,12 +182,9 @@ class TestProjeto(unittest.TestCase):
         adiciona_passaros(conn, passaro)
     
         titulo = 'meu primeiro post'
-        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-<<<<<<< HEAD
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor oi'
+
         id_criador = acha_id_usuario(conn, email)
-=======
-        id_criador = acha_nome_usuario(conn, email)
->>>>>>> 28bfc8c3336ba84e2aa97f9793e227ee1c5dffe1
 
         adiciona_post(conn, id_criador, titulo, texto=texto)
 
@@ -89,13 +196,11 @@ class TestProjeto(unittest.TestCase):
         id = acha_post(conn, id_criador, titulo)
         self.assertIsNotNone(id)
 
-<<<<<<< HEAD
         id = acha_post(conn, '90', titulo)
-=======
-        id = acha_post(conn, id, titulo)
->>>>>>> 28bfc8c3336ba84e2aa97f9793e227ee1c5dffe1
         self.assertIsNone(id)
-
+        URL, p =  lista_URL_e_tag(conn)
+        self.assertEqual(URL, ('NULL',))
+        self.assertEqual(p, (passaro,))
 #
     def test_adiciona_passaro(self):
         conn = self.__class__.connection
@@ -111,7 +216,7 @@ class TestProjeto(unittest.TestCase):
         self.assertIsNone(id)
 
 # # REMOVE
-    @unittest.skip('Em desenvolvimento.')
+
     def test_remove_usuario(self):
         conn = self.__class__.connection
     
@@ -123,34 +228,27 @@ class TestProjeto(unittest.TestCase):
         adiciona_usuario(conn, nome, email, cidade)
         id_usuario = acha_id_usuario(conn, email)
 
-        res = lista_usuario(conn)
+        res = lista_usuarios_ativos(conn)
         self.assertCountEqual(res, (id_usuario,))
 
         muda_ativo_usuario(conn, id_usuario)
 
-        res = lista_usuario(conn)
+        res = lista_usuarios_ativos(conn)
         self.assertFalse(res)
 
-    @unittest.skip('Em desenvolvimento.')
     def test_remove_passaro(self):
         conn = self.__class__.connection
         adiciona_passaros(conn, 'kestrel-one')
         id_passaro = acha_passaros(conn, 'kestrel-one')
 
-        res = lista_passaros(conn)
+        res = lista_passaros_ativos(conn)
         self.assertCountEqual(res, (id_passaro,))
 
         muda_ativo_passaros(conn, id_passaro)
 
-        res = lista_passaros(conn)
+        res = lista_passaros_ativos(conn)
         self.assertFalse(res)
 # #
-<<<<<<< HEAD
-    @unittest.skip('Em desenvolvimento.')
-=======
-    #@unittest.skip('Em desenvolvimento.')
-
->>>>>>> 28bfc8c3336ba84e2aa97f9793e227ee1c5dffe1
     def test_remove_post(self):
         conn = self.__class__.connection
 
@@ -167,411 +265,121 @@ class TestProjeto(unittest.TestCase):
         adiciona_passaros(conn, passaro)
     
         titulo = 'meu primeirp post'
-        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-        id_criador = acha_nome_usuario(conn, email)
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor oi'
+        id_criador = acha_id_usuario(conn, email)
 
         adiciona_post(conn, id_criador, titulo, texto=texto)
 
         id_post = acha_post(conn, id_criador, titulo)
         id_passaro = acha_passaros(conn, passaro)
 
-        adiciona_post_passaro(conn, id_post, id_passaro)
-
         res = lista_post_ativo(conn)
-        self.assertCountEqual(res, (id_post, id_passaro))
+        self.assertCountEqual(res, (id_post,))
 
         muda_ativo_post(conn, id_post, id_passaro)
 
         res = lista_post_ativo(conn)
         self.assertFalse(res)
 
-# # MUDA
-
-    def test_muda_titulo_post(self):
-        conn = self.__class__.connection
-
-        nome = 'paulost'
-        email = 'paulost@mememail.com'
-        cidade = 'sao paulo'
-
-        # Adiciona um usuario não existente.
-        adiciona_usuario(conn, nome, email, cidade)
-
-        titulo = 'meu primeiro post'
-        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-        id_criador = '0'
-
-        # Adiciona um perigo não existente.
-        adiciona_post(conn, id_criador, titulo, texto=texto)
-
-        titulo = 'meu primeirp posto'
-        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-        id_criador = '0'
-
-        # Adiciona um perigo não existente.
-        adiciona_post(conn, id_criador, titulo, texto=texto)
-        id = acha_post(conn, id_criador, titulo)
-
-        # Tenta mudar nome para algum nome já existente.
-        try:
-            novo_titulo = 'meu primeiro post'
-            muda_titulo_post(conn, id, novo_titulo)
-            self.fail('Não deveria ter mudado o nome.')
-        except ValueError as e:
-            pass
-
-        # Tenta mudar nome para nome inexistente.
-        muda_titulo_post(conn, id, 'postcaliptico')
-
-        # Verifica se mudou.
-        id_novo = acha_post(conn, id, 'postcaliptico')
-        self.assertEqual(id, id_novo)
-
-    def test_muda_URL_post(self):
-        conn = self.__class__.connection
-
-        nome = 'paulost'
-        email = 'paulost@mememail.com'
-        cidade = 'sao paulo'
-
-        # Adiciona um usuario não existente.
-        adiciona_usuario(conn, nome, email, cidade)
-
-        titulo = 'meu primeiro post'
-        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-        url = 'url.exemplo.com'
-        id_criador = '0'
-
-        # Adiciona um perigo não existente.
-        adiciona_post(conn, id_criador, titulo, texto=texto, url=url)
-
-        id = acha_post(conn, id_criador, titulo)
-
-        # Tenta mudar nome para algum nome já existente.
-        novo_url = 'url.exemplo2.com'
-        muda_URL_post(conn, id, novo_url) = 'url.exemplo2.com'
-
-        id = acha_post(conn, id_criador, titulo)
-
-    def test_muda_texto_post(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-    def test_muda_nome_passaros(self):
-        conn = self.__class__.connection
-
-        passaro = 'beija-flor'
-
-        # Adiciona um perigo não existente.
-        adiciona_passaros(conn, passaro)
-
-
-
-    def test_muda_nome_usuario(self):
-        conn = self.__class__.connection
-
-        nome = 'paulost'
-        email = 'paulost@mememail.com'
-        cidade = 'sao paulo'
-
-        # Adiciona um usuario não existente.
-        adiciona_usuario(conn, nome, email, cidade)
-
-    def test_muda_email_usuario(self):
-        conn = self.__class__.connection
-
-        nome = 'paulost'
-        email = 'paulost@mememail.com'
-        cidade = 'sao paulo'
-
-        # Adiciona um usuario não existente.
-        adiciona_usuario(conn, nome, email, cidade)
-
-    def test_muda_cidade_usuario(self):
-        conn = self.__class__.connection
-
-        nome = 'paulost'
-        email = 'paulost@mememail.com'
-        cidade = 'sao paulo'
-
-        # Adiciona um usuario não existente.
-        adiciona_usuario(conn, nome, email, cidade)
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-    # def test_muda_texto_post(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_titulo_post(self):
-#         conn = self.__class__.connection
-
-#         titulo = 'meu primeirp post'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-
-#         titulo = 'meu primeirp posti'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-#         id = acha_post(conn, id_criador, titulo)
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             novo_titulo = 'meu primeirp post'
-#             muda_titulo_post(conn, id, novo_titulo)
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_nome_perigo(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_nome_perigo(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_titulo_post(self):
-#         conn = self.__class__.connection
-
-#         titulo = 'meu primeirp post'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-
-#         titulo = 'meu primeirp posti'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-#         id = acha_post(conn, id_criador, titulo)
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             novo_titulo = 'meu primeirp post'
-#             muda_titulo_post(conn, id, novo_titulo)
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_nome_perigo(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_nome_perigo(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_titulo_post(self):
-#         conn = self.__class__.connection
-
-#         titulo = 'meu primeirp post'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-
-#         titulo = 'meu primeirp posti'
-#         texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor'
-#         id_criador = '0'
-
-#         # Adiciona um perigo não existente.
-#         adiciona_post(conn, id_criador, titulo, texto=texto)
-#         id = acha_post(conn, id_criador, titulo)
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             novo_titulo = 'meu primeirp post'
-#             muda_titulo_post(conn, id, novo_titulo)
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
-
-#     def test_muda_nome_perigo(self):
-#         conn = self.__class__.connection
-
-#         adiciona_perigo(conn, 'ecológico')
-
-#         adiciona_perigo(conn, 'climático')
-#         id = acha_perigo(conn, 'climático')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_perigo(conn, id, 'ecológico')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_perigo(conn, id, 'apocalíptico')
-
-#         # Verifica se mudou.
-#         id_novo = acha_perigo(conn, 'apocalíptico')
-#         self.assertEqual(id, id_novo)
 
 # # LISTA
 # # NEEDS FIX
-    def test_lista_usuario(self):
+
+    def test_usuarios_referenciados_por_usuario(self):
         conn = self.__class__.connection
 
         # Verifica que ainda não tem perigos no sistema.
         res = lista_usuario(conn)
+        self.assertFalse(res)
+
+        # Adiciona alguns perigos.
+        usuarios_id = []
+        nome = 'salomao'
+        email = 'salomao@gmail.com'
+        cidade = 'sao paulo'
+        adiciona_usuario(conn, nome, email, cidade)
+        usuarios_id.append(acha_id_usuario(conn, email))
+
+        nome = 'pedro'
+        email = 'pedroer@gmail.com'
+        cidade = 'sao paulo'
+        adiciona_usuario(conn, nome, email, cidade)
+        usuarios_id.append(acha_id_usuario(conn, email))
+
+        adiciona_post(conn, usuarios_id[0], "e ae pedro", texto="@pedro , e ae??")
+        adiciona_post(conn, usuarios_id[1], "e ae salomao", texto="@salomao , e ae??")
+
+        # Verifica se os perigos foram adicionados corretamente.
+        res = usuarios_referenciados_por_usuario(conn, usuarios_id[0])
+        self.assertEqual(res[0], "salomao")
+
+        res = usuarios_referenciados_por_usuario(conn, usuarios_id[1])
+        self.assertEqual(res[0], "salomao")
+
+    def test_lista_post(self):
+        conn = self.__class__.connection
+
+        # Verifica que ainda não tem perigos no sistema.
+        res = lista_post_ativo(conn)
+        self.assertFalse(res)
+
+        passaro = 'sabia'
+        adiciona_passaros(conn, passaro)
+
+        passaro = 'bem-te-vi'
+        adiciona_passaros(conn, passaro)
+
+        # Adiciona alguns perigos.
+        posts_id = []
+        nome = 'salomao'
+        email = 'salomao@gmail.com'
+        cidade = 'sao paulo'
+        titulo = "post super post"
+        adiciona_usuario(conn, nome, email, cidade)
+        adiciona_post(conn, acha_id_usuario(conn, email), titulo, texto='todo o #bem-te-vi que eu vi hoje estava cantando')
+        posts_id.append(acha_post(conn, acha_id_usuario(conn, email), titulo))
+
+        nome = 'pedro'
+        email = 'pedroer@gmail.com'
+        cidade = 'sao paulo'
+        titulo = "post super post"
+        adiciona_usuario(conn, nome, email, cidade)
+        adiciona_post(conn, acha_id_usuario(conn, email), titulo, texto='gente!!! quem viu o #sabia enorme que tinha no parque?? @salomao oi')
+        posts_id.append(acha_post(conn, acha_id_usuario(conn, email), titulo))
+
+        nome = 'carlos'
+        email = 'carlitos@gmail.com'
+        cidade = 'rio de janeiro'
+        titulo = "post super post"
+        adiciona_usuario(conn, nome, email, cidade)
+        adiciona_post(conn, acha_id_usuario(conn, email), titulo, texto='foi lindo o dia hoje')
+        posts_id.append(acha_post(conn, acha_id_usuario(conn, email), titulo))
+
+        nome = 'santana'
+        email = 'santanexx@gmail.com'
+        cidade = 'sao paulo'
+        titulo = "post super post"
+        adiciona_usuario(conn, nome, email, cidade)
+        adiciona_post(conn, acha_id_usuario(conn, email), titulo)
+        posts_id.append(acha_post(conn, acha_id_usuario(conn, email), titulo))
+
+        # Verifica se os perigos foram adicionados corretamente.
+        res = lista_post_ativo(conn)
+        self.assertCountEqual(res, posts_id)
+
+        # Remove os perigos.
+        for p in posts_id:
+            muda_ativo_post(conn, p)
+
+        # Verifica que todos os perigos foram removidos.
+        res = lista_post_ativo(conn)
+        self.assertFalse(res)
+
+    def test_lista_usuario(self):
+        conn = self.__class__.connection
+
+        # Verifica que ainda não tem perigos no sistema.
+        res = lista_usuarios_ativos(conn)
         self.assertFalse(res)
 
         # Adiciona alguns perigos.
@@ -611,200 +419,127 @@ class TestProjeto(unittest.TestCase):
         # Verifica que todos os perigos foram removidos.
         res = lista_usuarios_ativos(conn)
         self.assertFalse(res)
+
 # # NEEDS FIX
-#     def test_lista_perigos(self):
-#         conn = self.__class__.connection
+    def test_lista_passaros(self):
+        conn = self.__class__.connection
 
-#         # Verifica que ainda não tem perigos no sistema.
-#         res = lista_perigos(conn)
-#         self.assertFalse(res)
+        # Verifica que ainda não tem perigos no sistema.
+        res = lista_passaros_ativos(conn)
+        self.assertFalse(res)
 
-#         # Adiciona alguns perigos.
-#         perigos_id = []
-#         for p in ('nuclear', 'moral', 'emocional'):
-#             adiciona_perigo(conn, p)
-#             perigos_id.append(acha_perigo(conn, p))
+        # Adiciona alguns perigos.
+        passaros_id = []
+        passaro = 'beija-flor'
+        adiciona_passaros(conn, passaro)
+        passaros_id.append(acha_passaros(conn, passaro))
 
-#         # Verifica se os perigos foram adicionados corretamente.
-#         res = lista_perigos(conn)
-#         self.assertCountEqual(res, perigos_id)
+        passaro = 'bem-te-vi'
+        adiciona_passaros(conn, passaro)
+        passaros_id.append(acha_passaros(conn, passaro))
 
-#         # Remove os perigos.
-#         for p in perigos_id:
-#             remove_perigo(conn, p)
+        passaro = 'sabia'
+        adiciona_passaros(conn, passaro)
+        passaros_id.append(acha_passaros(conn, passaro))
 
-#         # Verifica que todos os perigos foram removidos.
-#         res = lista_perigos(conn)
-#         self.assertFalse(res)
+        passaro = 'tucano'
+        adiciona_passaros(conn, passaro)
+        passaros_id.append(acha_passaros(conn, passaro))
 
-# ################################## TABELAS SECUNDARIAS ##################################
+        passaro = 'tico-tico'
+        adiciona_passaros(conn, passaro)
+        passaros_id.append(acha_passaros(conn, passaro))
 
-# # ADICIONA
+        # Verifica se os perigos foram adicionados corretamente.
+        res = lista_passaros_ativos(conn)
+        self.assertCountEqual(res, passaros_id)
+
+        # Remove os perigos.
+        for p in passaros_id:
+            muda_ativo_passaros(conn, p)
+
+        # Verifica que todos os perigos foram removidos.
+        res = lista_passaros_ativos(conn)
+        self.assertFalse(res)
+
+    def test_adiciona_post(self):
+        conn = self.__class__.connection
+
+        nome = 'paulost'
+        email = 'paulost@mememail.com'
+        cidade = 'sao paulo'
+
+        # Adiciona um perigo não existente.
+        adiciona_usuario(conn, nome, email, cidade)
+
+        passaro = 'beija-flor'
+
+        # Adiciona um perigo não existente.
+        adiciona_passaros(conn, passaro)
     
-#     # usar essa fnc
-#     #@unittest.skip('Em desenvolvimento.')
-#     def test_adiciona_perigo_a_comida(self):
-#         conn = self.__class__.connection
+        titulo = 'meu primeiro post'
+        texto = 'oi pessoal!! to postando aqui so pra dizer que fui passear pelo ibira e vi um #beija-flor oi'
+        id_criador = acha_id_usuario(conn, email)
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-#         # Cria algumas comidas.
-#         adiciona_comida(conn, 'coxinha')
-#         id_coxinha = acha_comida(conn, 'coxinha')
+        titulo = 'meu primeiro posto'
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-#         adiciona_comida(conn, 'kibe')
-#         id_kibe = acha_comida(conn, 'kibe')
+        titulo = 'meu primeiro postu'
+        adiciona_post(conn, id_criador, titulo, texto=texto)
 
-#         # Cria alguns perigos.
-#         adiciona_perigo(conn, 'estomacal')
-#         id_estomacal = acha_perigo(conn, 'estomacal')
+        listinha = ve_posts_usuario_nao_cronologica(conn, id_criador)
+
+        self.assertEqual(listinha[0], 'meu primeiro post')
+        self.assertEqual(listinha[1], 'meu primeiro posto')
+        self.assertEqual(listinha[2], 'meu primeiro postu')
+
+    def test_usuario_mais_popular(self):
+        conn = self.__class__.connection
+
+        resto = 1
+
+        # adicionando posts e usuarios
+        nome = 'salomao'
+        email = 'salomao@gmail.com'
+        cidade = 'sao paulo'
+        adiciona_usuario(conn, nome, email, cidade)
+        id_criador = acha_id_usuario(conn, email)
+        titulo = "A"
+        texto = "A"
+        url = "A"
+        adiciona_post(conn, id_criador, titulo, texto=texto)
+
+        nome = 'pedro'
+        email = 'pedroer@gmail.com'
+        cidade = 'sao paulo'
+        adiciona_usuario(conn, nome, email, cidade)
+        id_criador = acha_id_usuario(conn, email)
+        titulo = "Bla"
+        texto = "B"
+        url = "B"
+        adiciona_post(conn, id_criador, titulo, texto=texto)
         
-#         adiciona_perigo(conn, 'moral')
-#         id_moral = acha_perigo(conn, 'moral')
-        
-#         adiciona_perigo(conn, 'emocional')
-#         id_emocional = acha_perigo(conn, 'emocional')
 
-#         adiciona_perigo(conn, 'viral')
-#         id_viral = acha_perigo(conn, 'viral')
+        nome = 'carlos'
+        email = 'carlitos@gmail.com'
+        cidade = 'rio de janeiro'
+        adiciona_usuario(conn, nome, email, cidade)
+        id_criador = acha_id_usuario(conn, 'pedroer@gmail.com')
+        post_id = acha_post(conn, id_criador, "Bla")
+        adiciona_view_user_post(conn, post_id, acha_id_usuario(conn, email), resto, "resto", "resto")
 
-#         # Conecta comidas e perigos.
-#         adiciona_perigo_a_comida(conn, id_estomacal, id_coxinha)
-#         adiciona_perigo_a_comida(conn, id_estomacal, id_kibe)
-#         adiciona_perigo_a_comida(conn, id_viral, id_coxinha)
-#         adiciona_perigo_a_comida(conn, id_viral, id_kibe)
-#         adiciona_perigo_a_comida(conn, id_moral, id_coxinha)
-#         adiciona_perigo_a_comida(conn, id_emocional, id_kibe)
-
-#         res = lista_comidas_de_perigo(conn, id_estomacal)
-#         self.assertCountEqual(res, (id_coxinha, id_kibe))
-
-#         res = lista_comidas_de_perigo(conn, id_viral)
-#         self.assertCountEqual(res, (id_coxinha, id_kibe))
-
-#         res = lista_comidas_de_perigo(conn, id_moral)
-#         self.assertCountEqual(res, (id_coxinha,))
-
-#         res = lista_comidas_de_perigo(conn, id_emocional)
-#         self.assertCountEqual(res, (id_kibe,))
-
-#         res = lista_perigos_de_comida(conn, id_coxinha)
-#         self.assertCountEqual(res, (id_estomacal, id_viral, id_moral))
-
-#         res = lista_perigos_de_comida(conn, id_kibe)
-#         self.assertCountEqual(res, (id_estomacal, id_viral, id_emocional))
-
-#         # Testa se a remoção de uma comida causa a remoção das relações entre essa comida e seus perigos.
-#         remove_comida(conn, id_kibe)
-
-#         res = lista_comidas_de_perigo(conn, id_estomacal)
-#         self.assertCountEqual(res, (id_coxinha,))
-
-#         res = lista_comidas_de_perigo(conn, id_viral)
-#         self.assertCountEqual(res, (id_coxinha,))
-
-#         res = lista_comidas_de_perigo(conn, id_emocional)
-#         self.assertFalse(res)
-
-#         # Testa se a remoção de um perigo causa a remoção das relações entre esse perigo e suas comidas.
-#         remove_perigo(conn, id_viral)
-
-#         res = lista_perigos_de_comida(conn, id_coxinha)
-#         self.assertCountEqual(res, (id_estomacal, id_moral))
-
-#         # Testa a remoção específica de uma relação comida-perigo.
-#         remove_perigo_de_comida(conn, id_estomacal, id_coxinha)
-
-#         res = lista_perigos_de_comida(conn, id_coxinha)
-#         self.assertCountEqual(res, (id_moral,))
-
-#     # NEEDS FIX
-#     def adiciona_preferencia(self):
-#         conn = self.__class__.connection
-
-#         comida = 'coxinha'
-
-#         # Adiciona comida não existente.
-#         adiciona_comida(conn, comida)
-
-#         # Tenta adicionar a mesma comida duas vezes.
-#         try:
-#             adiciona_comida(conn, comida)
-#             self.fail('Nao deveria ter adicionado a mesma comida duas vezes.')
-#         except ValueError as e:
-#             pass
-
-#         # Checa se a comida existe.
-#         id = acha_comida(conn, comida)
-#         self.assertIsNotNone(id)
-
-#         # Tenta achar uma comida inexistente.
-#         id = acha_comida(conn, 'esfiha')
-#         self.assertIsNone(id)
-
-#     # NEEDS FIX
-#     def adiciona_view_user_post(self):
-
-# # REMOVE
-
-#     def test_remove_comida(self):
-#         conn = self.__class__.connection
-#         adiciona_comida(conn, 'coxinha')
-#         id = acha_comida(conn, 'coxinha')
-
-#         res = lista_comidas(conn)
-#         self.assertCountEqual(res, (id,))
-
-#         remove_comida(conn, id)
-
-#         res = lista_comidas(conn)
-#         self.assertFalse(res)
-
-# # MUDA
-
-#     def test_muda_nome_comida(self):
-#         conn = self.__class__.connection
-
-#         adiciona_comida(conn, 'alface')
-#         adiciona_comida(conn, 'tomate')
-#         id = acha_comida(conn, 'tomate')
-
-#         # Tenta mudar nome para algum nome já existente.
-#         try:
-#             muda_nome_comida(conn, id, 'alface')
-#             self.fail('Não deveria ter mudado o nome.')
-#         except ValueError as e:
-#             pass
-
-#         # Tenta mudar nome para nome inexistente.
-#         muda_nome_comida(conn, id, 'azeitona')
-
-# # LISTA
-
-#     def test_lista_comidas(self):
-#         conn = self.__class__.connection
-
-#         # Verifica que ainda não tem comidas no sistema.
-#         res = lista_comidas(conn)
-#         self.assertFalse(res)
-
-#         # Adiciona algumas comidas.
-#         comidas_id = []
-#         for p in ('abacaxi', 'tomate', 'cebola'):
-#             adiciona_comida(conn, p)
-#             comidas_id.append(acha_comida(conn, p))
-
-#         # Verifica se as comidas foram adicionadas corretamente.
-#         res = lista_comidas(conn)
-#         self.assertCountEqual(res, comidas_id)
-
-#         # Remove as comidas.
-#         for c in comidas_id:
-#             remove_comida(conn, c)
-
-#         # Verifica que todos as comidas foram removidas.
-#         res = lista_comidas(conn)
-#         self.assertFalse(res)
+        nome = 'santana'
+        email = 'santanexx@gmail.com'
+        cidade = 'sao paulo'
+        adiciona_usuario(conn, nome, email, cidade)
+        id_criador = acha_id_usuario(conn, 'pedroer@gmail.com')
+        post_id = acha_post(conn, id_criador, "Bla")
+        adiciona_view_user_post(conn, post_id, acha_id_usuario(conn, email), resto, resto, resto)
 
 
+
+        self.assertEqual(acha_id_usuario(conn, 'pedroer@gmail.com'), usuario_mais_popular_cidade(conn, "sao paulo")[0])
 
 
 
@@ -814,7 +549,7 @@ def run_sql_script(filename):
         subprocess.run(
             [
                 config['MYSQL'], 
-                '-u', config['USER'], 
+                '-u' + config['USER'], 
                 '-p' + config['PASS'], 
                 '-h', config['HOST']
             ], 
@@ -822,13 +557,13 @@ def run_sql_script(filename):
         )
 
 def setUpModule():
-    # filenames = [entry for entry in os.listdir() 
-    #     if os.path.isfile(entry) and re.match(r'.*_\d{3}\.sql', entry)]
-    # for filename in filenames:
-    #     run_sql_script(filename)
-    run_sql_script('script1.sql')
-    run_sql_script('script2.sql')
-    run_sql_script('script3.sql')
+    filenames = [entry for entry in os.listdir() 
+        if os.path.isfile(entry) and re.match(r'.*_\d{3}\.sql', entry)]
+    for filename in filenames:
+        run_sql_script(filename)
+    # run_sql_script('script1.sql')
+    # run_sql_script('script2.sql')
+    # run_sql_script('script3.sql')
 
 def tearDownModule():
     run_sql_script('../scripts_DB/tear_down.sql')
